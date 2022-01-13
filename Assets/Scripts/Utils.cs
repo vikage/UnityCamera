@@ -63,4 +63,12 @@ public class Utils
         // Debug.Log($"camera: rotation:{texture.videoRotationAngle} flip:{texture.videoVerticallyMirrored}");
         return resizer.Resize(texture, w, h, false, mtx, uvRect);
     }
+
+    public static Vector2 WorldSize()
+    {
+        Vector3 topLeft = Camera.main.ScreenToWorldPoint(new Vector3(0, 0, 0));
+        Vector3 bottomRight = Camera.main.ScreenToWorldPoint(new Vector3(Screen.width, Screen.height, 0));
+
+        return new Vector2(bottomRight.x - topLeft.x, bottomRight.y - topLeft.y);
+    }
 }

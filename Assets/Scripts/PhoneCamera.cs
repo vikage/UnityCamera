@@ -54,9 +54,10 @@ public class PhoneCamera : MonoBehaviour
         float ratio = (float)cameraTexture.width / (float)cameraTexture.height;
         ratioFilter.aspectRatio = ratio;
 
+        Debug.Log("Camera width: " + cameraTexture.width + ", height: " + cameraTexture.height);
         if (this.cameraTexture.didUpdateThisFrame)
         {
-            RenderTexture texture = Utils.NormalizeWebcam(cameraTexture, 1280, 720, true);
+            RenderTexture texture = Utils.NormalizeWebcam(cameraTexture, cameraTexture.width, cameraTexture.height, true);
             moveNet.Invoke(texture);
             results = moveNet.GetResults();
             cameraPreviewView.texture = texture;
