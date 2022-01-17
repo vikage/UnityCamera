@@ -57,7 +57,8 @@ public class FitnessController : MonoBehaviour
                 Debug.Log("leftAnkleWorldPoint: " + leftAnkleWorldPoint);
                 Debug.Log("square.transform.position.y + (square.transform.localScale.y / 2): " + square.transform.position.y + (square.transform.localScale.y / 2));
 
-                if (leftAnkleWorldPoint.y > square.transform.position.y + (square.transform.localScale.y / 2))
+                if (leftAnkleWorldPoint.y > square.transform.position.y + (square.transform.localScale.y / 2) &&
+                    rightAnkleWorldPoint.y > square.transform.position.y + (square.transform.localScale.y / 2))
                 {
                     Debug.Log("Point");
                     ResetJumpGuard();

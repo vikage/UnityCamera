@@ -24,11 +24,11 @@ public class PhoneCamera : MonoBehaviour
     void Awake()
     {
         shared = this;
+        Screen.sleepTimeout = SleepTimeout.NeverSleep;
     }
 
     void Start()
     {
-        Screen.sleepTimeout = SleepTimeout.NeverSleep;
         moveNet = new MoveNet(fileName);
 
         WebCamDevice[] devices = WebCamTexture.devices;
