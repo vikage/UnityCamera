@@ -18,6 +18,7 @@ public class PhoneCamera : MonoBehaviour
     private MoveNet.Result[] results;
     private float threshold = 0.3f;
     private LinePool linePool = new LinePool();
+    private Vector2 cameraTextureSize;
 
     void Start()
     {
@@ -91,8 +92,8 @@ public class PhoneCamera : MonoBehaviour
             {
                 Vector3 point1 = MathTF.Lerp(min, max, new Vector3(a.x, 1f - a.y, 0));
                 Vector3 point2 = MathTF.Lerp(min, max, new Vector3(b.x, 1f - b.y, 0));
-                point1.y *= (1920f / 1080f);
-                point2.y *= (1920f / 1080f);
+                point1.y *= ratioFilter.aspectRatio;
+                point2.y *= ratioFilter.aspectRatio;
                 point1.z = 0;
                 point2.z = 0;
 
