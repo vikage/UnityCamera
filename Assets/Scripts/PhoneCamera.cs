@@ -13,6 +13,7 @@ public class PhoneCamera : MonoBehaviour
     public RawImage cameraPreviewView;
     public AspectRatioFitter ratioFilter;
     private MoveNet moveNet;
+    public static PhoneCamera shared;
 
     private readonly Vector3[] rtCorners = new Vector3[4];
     private MoveNet.Result[] results;
@@ -20,8 +21,14 @@ public class PhoneCamera : MonoBehaviour
     private LinePool linePool = new LinePool();
     private Vector2 cameraTextureSize;
 
+    void Awake()
+    {
+        shared = this;
+    }
+
     void Start()
     {
+        Screen.sleepTimeout = SleepTimeout.NeverSleep;
         moveNet = new MoveNet(fileName);
 
         WebCamDevice[] devices = WebCamTexture.devices;
@@ -78,11 +85,6 @@ public class PhoneCamera : MonoBehaviour
         var connections = MoveNet.Connections;
         int connectionsCount = connections.GetLength(0);
 
-        var rect = cameraPreviewView.GetComponent<RectTransform>();
-        rect.GetWorldCorners(rtCorners);
-        Vector3 min = rtCorners[0];
-        Vector3 max = rtCorners[2];
-
         Vector2 screenSize = new Vector2(Screen.width, Screen.height);
         for (int index = 0; index < connectionsCount; index++)
         {
@@ -90,12 +92,8 @@ public class PhoneCamera : MonoBehaviour
             var b = results[(int)connections[index, 1]];
             if (a.confidence >= threshold && b.confidence >= threshold)
             {
-                Vector3 point1 = MathTF.Lerp(min, max, new Vector3(a.x, 1f - a.y, 0));
-                Vector3 point2 = MathTF.Lerp(min, max, new Vector3(b.x, 1f - b.y, 0));
-                point1.y *= ratioFilter.aspectRatio;
-                point2.y *= ratioFilter.aspectRatio;
-                point1.z = 0;
-                point2.z = 0;
+                Vector3 point1 = PoseEstimatePointToWorldPoint(a);
+                Vector3 point2 = PoseEstimatePointToWorldPoint(b);
 
                 LineRenderer line = linePool.GetLine();
                 line.SetPosition(0, point1);
@@ -103,4 +101,25 @@ public class PhoneCamera : MonoBehaviour
             }
         }
     }
+
+    public MoveNet.Result[] GetResult()
+    {
+        return this.results;
+    }
+
+    #region Helper
+    public Vector3 PoseEstimatePointToWorldPoint(MoveNet.Result point)
+    {
+        var rect = cameraPreviewView.GetComponent<RectTransform>();
+        rect.GetWorldCorners(rtCorners);
+        Vector3 min = rtCorners[0];
+        Vector3 max = rtCorners[2];
+
+        Vector3 result = MathTF.Lerp(min, max, new Vector3(point.x, 1f - point.y, 0));
+
+        result.y *= ratioFilter.aspectRatio;
+        result.z = 0;
+        return result;
+    }
+    #endregion
 }
