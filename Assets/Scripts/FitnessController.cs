@@ -4,18 +4,33 @@ using UnityEngine;
 using TensorFlowLite;
 using UnityEngine.UI;
 
+enum FitnessGameState
+{
+    IDLE = 0,
+    STARTED = 1,
+    GAME_OVER = 2
+}
+
 public class FitnessController : MonoBehaviour
 {
     public GameObject square;
     public Text pointLabel;
+    public Button startButton;
+    public Text gameOverText;
+
     private float velocity = 0.5f;
     private float delayCheckBodyTime = 0;
     private int currentPoint = 0;
+    private FitnessGameState state = FitnessGameState.IDLE;
+
 
     void Start()
     {
         ResetJumpGuard();
         ResetPoint();
+        square.SetActive(false);
+        startButton.onClick.AddListener(StartGame);
+        gameOverText.gameObject.SetActive(false);
     }
 
     private void ResetJumpGuard()
@@ -33,6 +48,11 @@ public class FitnessController : MonoBehaviour
 
     void Update()
     {
+        if (this.state != FitnessGameState.STARTED)
+        {
+            return;
+        }
+
         UpdateJumpGuard();
         if (delayCheckBodyTime > 0)
         {
@@ -70,9 +90,13 @@ public class FitnessController : MonoBehaviour
 
         if (square.transform.position.y >= 0)
         {
+            this.state = FitnessGameState.GAME_OVER;
             Debug.Log("Game over");
             ResetPoint();
             ResetJumpGuard();
+            square.SetActive(false);
+            gameOverText.gameObject.SetActive(true);
+            startButton.gameObject.SetActive(true);
         }
 
         // square.transform.position = new Vector2(0, 0);
@@ -84,6 +108,15 @@ public class FitnessController : MonoBehaviour
         // Lie
         // square.transform.position = new Vector2(0, worldSize.y / 8);
         // square.transform.localScale = new Vector3(worldSize.x, 3 * worldSize.y / 4, 1);
+    }
+
+    public void StartGame()
+    {
+        this.state = FitnessGameState.STARTED;
+        this.gameOverText.gameObject.SetActive(false);
+        square.SetActive(true);
+        startButton.gameObject.SetActive(false);
+        ResetJumpGuard();
     }
 
     private void IncreasePoint()
