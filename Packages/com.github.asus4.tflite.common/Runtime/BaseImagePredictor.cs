@@ -62,7 +62,7 @@ namespace TensorFlowLite
             resizer = new TextureResizer();
             resizeOptions = new TextureResizer.ResizeOptions()
             {
-                aspectMode = AspectMode.Fit,
+                aspectMode = AspectMode.Fill,
                 rotationDegree = 0,
                 mirrorHorizontal = false,
                 mirrorVertical = false,
@@ -105,6 +105,13 @@ namespace TensorFlowLite
         }
 
         protected async UniTask<bool> ToTensorAsync(Texture inputTex, float[,,] inputs, CancellationToken cancellationToken)
+        {
+            RenderTexture tex = resizer.Resize(inputTex, resizeOptions);
+            await tex2tensor.ToTensorAsync(tex, inputs);
+            return true;
+        }
+
+        protected async UniTask<bool> ToTensorAsync(Texture inputTex, sbyte[,,] inputs, CancellationToken cancellationToken)
         {
             RenderTexture tex = resizer.Resize(inputTex, resizeOptions);
             await tex2tensor.ToTensorAsync(tex, inputs);

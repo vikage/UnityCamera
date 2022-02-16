@@ -117,7 +117,7 @@ public class PhoneCamera : MonoBehaviour
 
         Vector3 result = MathTF.Lerp(min, max, new Vector3(point.x, 1f - point.y, 0));
 
-        result.y *= ratioFilter.aspectRatio;
+        result.x /= ratioFilter.aspectRatio;
         result.z = 0;
         return result;
     }
